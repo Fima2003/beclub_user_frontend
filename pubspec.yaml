@@ -1,0 +1,46 @@
+name: beclub
+description: Cluves - be closer to your favourite brands
+
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=2.18.0 <3.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.5
+  font_awesome_flutter: ^10.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.1
+  localstorage: ^4.0.0+1
+  flutter_bloc: ^8.1.1
+  connectivity_plus: ^2.3.6+1
+  equatable: ^2.0.5
+  formz: ^0.4.1
+
+flutter:
+
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+
+  fonts:
+    - family: Comfortaa
+      fonts:
+        - asset: assets/fonts/Comfortaa/static/Comfortaa-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Comfortaa/static/Comfortaa-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Comfortaa/static/Comfortaa-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Comfortaa/static/Comfortaa-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Comfortaa/static/Comfortaa-Light.ttf
+          weight: 300
