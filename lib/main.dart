@@ -21,8 +21,8 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<InternetCubit>(
-          create: (context) => InternetCubit(connectivity: connectivity),
           lazy: false,
+          create: (context) => InternetCubit(connectivity: connectivity),
         ),
       ],
       child: MaterialApp(
@@ -31,8 +31,8 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           fontFamily: 'Comfortaa',
           inputDecorationTheme: InputDecorationTheme(
-            border: OutlineInputBorder(
-              borderSide: const BorderSide(color: kBlack, width: 1),
+            enabledBorder: OutlineInputBorder(
+              borderSide: const BorderSide(color: kBlack, width: 2),
               borderRadius: BorderRadius.circular(0),
             ),
             focusedBorder: OutlineInputBorder(
@@ -54,17 +54,22 @@ class MyApp extends StatelessWidget {
               fontSize: 50,
               fontWeight: FontWeight.w500,
               color: kBlack
-            ),
+            ), // For Big-big names
             labelSmall: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w400,
               color: kRed
-            )
+            ), // For Errors
+            bodyMedium: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w400,
+              color: kBlack
+            ), // For usual text
           ),
           textButtonTheme: TextButtonThemeData(
             style: TextButton.styleFrom(
               backgroundColor: kBlack,
-              textStyle: const TextStyle(color: kWhite, fontWeight: FontWeight.w700, fontSize: 20),
+              textStyle: const TextStyle(color: kWhite, fontWeight: FontWeight.w700, fontSize: 20, fontFamily: 'Comfortaa'),
             )
           ),
           outlinedButtonTheme: OutlinedButtonThemeData(

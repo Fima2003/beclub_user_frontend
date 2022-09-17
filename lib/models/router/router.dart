@@ -1,3 +1,5 @@
+import 'package:beclub/presentation/screens/signUpScreen/signup_screen.dart';
+
 import '../../presentation/screens/screens.dart';
 import 'package:flutter/material.dart';
 
@@ -10,9 +12,13 @@ class GeneratedRouter{
       case meetPageRouteName:
         return MaterialPageRoute(builder: (_) => const MeetScreen());
       case logInPageRouteName:
-        return MaterialPageRoute(builder: (_) => const LoginScreen());
+        return MaterialPageRoute(builder: (_) => const LoginScreen());//const LoginScreen());
+      case alternateMeetPageRouteName:
+        return MaterialPageRoute(builder: (_) => const AlternateMeetScreen());
+      case alternateLogInPageRouteName:
+        return MaterialPageRoute(builder: (_) => const AlternateLoginScreen());
       case signUpPageRouteName:
-        return MaterialPageRoute(builder: (_) => const Scaffold());
+        return MaterialPageRoute(builder: (_) => const SignUpScreen());
       case '/test':
         return MaterialPageRoute(builder: (_) => const Scaffold(body: Center(child: Text("Success"))));
       default:

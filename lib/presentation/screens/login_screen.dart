@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../constants/palette.dart';
 import '../../logic/internet/internet_cubit.dart';
 import '../../logic/login/login_bloc.dart';
+import '../../models/animations/shake_animation.dart';
 
 class LoginScreen extends StatefulWidget {
 
@@ -18,13 +19,37 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _usernameFocusNode = FocusNode();
-  final _passwordFocusNode = FocusNode();
   double kMargin = 20;
   String error = "";
+  final shakeKey = GlobalKey<ShakeWidgetState>();
+  FocusNode originalFNode = FocusNode();
+  FaIcon originalIcon = const FaIcon(
+    FontAwesomeIcons.eyeSlash,
+    color: kBlack,
+  );
+  bool originalObscure = true;
 
   @override
   void initState() {
+    originalFNode.addListener(() {
+      if(originalFNode.hasFocus){
+        setState(() {
+          if(originalObscure){
+            originalIcon = const FaIcon(FontAwesomeIcons.eyeSlash, color: kGreen);
+          }else{
+            originalIcon = const FaIcon(FontAwesomeIcons.eye, color: kGreen);
+          }
+        });
+      }else{
+        setState(() {
+          if(originalObscure){
+            originalIcon = const FaIcon(FontAwesomeIcons.eyeSlash, color: kBlack);
+          }else{
+            originalIcon = const FaIcon(FontAwesomeIcons.eye, color: kBlack);
+          }
+        });
+      }
+    });
     super.initState();
   }
 
@@ -34,16 +59,15 @@ class _LoginScreenState extends State<LoginScreen> {
         return Container(
           margin: EdgeInsets.only(bottom: kMargin),
           child: TextFormField(
-            focusNode: _usernameFocusNode,
             autofocus: true,
             autocorrect: false,
             cursorColor: kGreen,
             decoration: const InputDecoration(
-                labelText: "Enter your nick or e-mail"
+                labelText: "Enter your username or e-mail"
             ),
-            validator: (val) => state.usernameCorrect ? null : "Ensure you entered correct username or e-mail",
+            validator: (val) => state.usernameEmailCorrect ? null : "Make sure you entered something",
             textInputAction: TextInputAction.next,
-            onChanged: (val) => context.read<LoginBloc>().add(LoginUsernameChange(val)),
+            onChanged: (val) => context.read<LoginBloc>().add(LoginUsernameEmailChange(val)),
           )
         );
       },
@@ -56,16 +80,31 @@ class _LoginScreenState extends State<LoginScreen> {
         return Container(
           margin: EdgeInsets.only(bottom: kMargin),
           child: TextFormField(
-            focusNode: _passwordFocusNode,
+            focusNode: originalFNode,
+            initialValue: state.password.value,
             autocorrect: false,
             cursorColor: kGreen,
-            obscureText: true,
+            obscureText: originalObscure,
             enableSuggestions: false,
-            decoration: const InputDecoration(
-                labelText: "Enter your password",
+            decoration: InputDecoration(
+              labelText: "Enter your password",
+              errorMaxLines: 3,
+              suffixIcon: IconButton(
+                icon: originalIcon,
+                onPressed: (){
+                  setState(() {
+                    originalObscure = !originalObscure;
+                    if(originalFNode.hasFocus){
+                      originalIcon = originalObscure ? const FaIcon(FontAwesomeIcons.eyeSlash, color: kGreen,) : const FaIcon(FontAwesomeIcons.eye, color: kGreen,);
+                    }else{
+                      originalIcon = originalObscure ? const FaIcon(FontAwesomeIcons.eyeSlash, color: kBlack,) : const FaIcon(FontAwesomeIcons.eye, color: kBlack,);
+                    }
+                  });
+                },
+              )
             ),
             textInputAction: TextInputAction.done,
-            validator: (val) => state.passwordCorrect ? null : "Ensure you entered correct password",
+            validator: (val) => state.passwordCorrect ? null : "Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character(@\$!%*?&_.)",
             onChanged: (val) => context.read<LoginBloc>().add(LoginPasswordChange(val)),
           )
         );
@@ -74,23 +113,27 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget submitButton(Size size){
-    return BlocBuilder<LoginBloc, LoginState>(
-      builder: (context, state) {
-        if(state.status.isSubmissionInProgress){
+    return Builder(
+      builder: (context) {
+        final loginState = context.watch<LoginBloc>();
+        final internetState = context.watch<InternetCubit>();
+        if(loginState.state.status.isSubmissionInProgress){
           return Container(
             width: size.width,
             height: 50,
             color: kBlack,
             child: const Center(child: CircularProgressIndicator(color: kWhite,)),
           );
-        }else {
+        } else {
           return Container(
             width: size.width,
             height: 50,
             child: TextButton(
               child: const Text("Log in", style: TextStyle(color: kWhite)),
               onPressed: () {
-                if(_formKey.currentState!.validate()){
+                if(internetState.state is InternetDisconnected || loginState.state.error != "") {
+                  shakeKey.currentState?.shake();
+                }else if(_formKey.currentState!.validate()){
                   context.read<LoginBloc>().add(LoginSubmitted());
                 }
               },
@@ -102,26 +145,34 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget errorText(String error){
-    return error != "" ? Container(
-        margin: const EdgeInsets.only(top: 10),
-        child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                margin: const EdgeInsets.only(right: 10),
-                child: const FaIcon(
-                    FontAwesomeIcons.circleXmark,
-                    color: kRed,
-                    size: 15
+    return error != "" ? ShakeWidget(
+      key: shakeKey,
+      shakeOffset: 10,
+      shakeDuration: const Duration(milliseconds: 500),
+      child: Container(
+          margin: const EdgeInsets.only(top: 10),
+          child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  margin: const EdgeInsets.only(right: 10),
+                  child: const FaIcon(
+                      FontAwesomeIcons.circleXmark,
+                      color: kRed,
+                      size: 15
+                  ),
                 ),
-              ),
-              Text(
-                error,
-                style: Theme.of(context).textTheme.labelSmall,
-              )
-            ]
-        )
+                Flexible(
+                  fit: FlexFit.loose,
+                  child: Text(
+                    error,
+                    style: Theme.of(context).textTheme.labelSmall,
+                  ),
+                )
+              ]
+          )
+      ),
     ) : Container();
   }
 
@@ -188,8 +239,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void dispose() {
-    _usernameFocusNode.dispose();
-    _passwordFocusNode.dispose();
     super.dispose();
   }
 }

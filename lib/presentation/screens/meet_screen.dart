@@ -7,11 +7,6 @@ class MeetScreen extends StatelessWidget {
   const MeetScreen({Key? key}) : super(key: key);
 
 
-
-  signUp(){
-
-  }
-
   @override
   Widget build(BuildContext context) {
 
@@ -50,7 +45,9 @@ class MeetScreen extends StatelessWidget {
                     width: size.width*0.45,
                     height: size.height*0.05,
                     child: OutlinedButton(
-                      onPressed: signUp,
+                      onPressed: (){
+                        Navigator.of(context).pushNamed(signUpPageRouteName);
+                      },
                       child: const Text("Sign Up", style: TextStyle(color: kBlack))
                     )
                   )
