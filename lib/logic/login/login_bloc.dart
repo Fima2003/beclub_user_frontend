@@ -1,8 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:beclub/constants/responses/login_responses.dart';
+import 'package:beclub/constants/routes.dart';
 import 'package:dio/dio.dart';
+import 'package:localstorage/localstorage.dart';
 
+import '../../constants/responses/general_responses.dart';
 import '../../models/formzModels/models.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -81,15 +85,13 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       ));
       try {
         var response = await Dio().post(
-          "http://192.168.1.28:8080/api/users/sign_in",
+          usersSignInRoute,
           data: state.toJson(),
         );
-        print(response);
-        emit(state.copyWith(
-            status: FormzStatus.submissionSuccess
-        ));
+        final LocalStorage storage = LocalStorage('cluvs');
+        storage.setItem('JWT', response.data['token'].split(' ')[1]);
+        emit(state.copyWith(status: FormzStatus.submissionSuccess));
       } on DioError catch(e){
-        print(e.response!.statusCode);
         switch(e.response!.statusCode){
           case(404):
             emit(state.copyWith(status: FormzStatus.submissionFailure, error: userDNE));
@@ -101,11 +103,11 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
             emit(state.copyWith(status: FormzStatus.submissionFailure, error: wrongPassword));
             break;
           default:
-            emit(state.copyWith(status: FormzStatus.submissionFailure, error: "An error occurred"));
+            emit(state.copyWith(status: FormzStatus.submissionFailure, error: generalErrorOccurred));
             break;
         }
       } catch(e){
-        emit(state.copyWith(status: FormzStatus.submissionFailure, error: "An error occurred"));
+        emit(state.copyWith(status: FormzStatus.submissionFailure, error: generalErrorOccurred));
       }
     }
   }

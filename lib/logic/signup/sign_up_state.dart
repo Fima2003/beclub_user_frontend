@@ -58,6 +58,17 @@ class SignUpState extends Equatable {
     );
   }
 
+  Map<String, dynamic> toJson() => {
+    "nick": username.value,
+    "email": email.value,
+    "password": password.value,
+    "first_name": firstName.value,
+    "last_name": lastName.value,
+    "date_of_birth": birth?.toIso8601String(),
+    "preferences": categories.join(','),
+    "gender": gender
+  };
+
   @override
   List<Object?> get props => [username, password, status, error, email, firstName, lastName, birth, gender, categories];
 

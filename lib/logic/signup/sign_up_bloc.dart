@@ -1,9 +1,13 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 import 'package:formz/formz.dart';
+import 'package:localstorage/localstorage.dart';
 
+import '../../constants/responses/general_responses.dart';
+import '../../constants/routes.dart';
 import '../../models/formzModels/models.dart';
 import '../../constants/responses/sign_up_responses.dart';
 
@@ -103,12 +107,32 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
         state.copyWith(status: FormzStatus.submissionInProgress)
       );
       try {
-        await Future<void>.delayed(const Duration(seconds: 2));
-        emit(
-            state.copyWith(status: FormzStatus.submissionSuccess)
+        var response = await Dio().post(
+          usersRoute,
+          data: state.toJson(),
         );
-      }catch(e){
-        emit(state.copyWith(status: FormzStatus.submissionFailure, error: e.toString()));
+        final LocalStorage storage = LocalStorage('cluvs');
+        storage.setItem('JWT', response.data['token'].split(' ')[1]);
+        emit(state.copyWith(
+            status: FormzStatus.submissionSuccess
+        ));
+      } on DioError catch(e){
+        switch(e.response!.statusCode){
+          case(700):
+            emit(state.copyWith(status: FormzStatus.submissionFailure, error: notAllFieldsAreFilled));
+            break;
+          case(703):
+            emit(state.copyWith(status: FormzStatus.submissionFailure, error: userAlreadyExists));
+            break;
+          case(705):
+            emit(state.copyWith(status: FormzStatus.submissionFailure, error: emailAlreadyExists));
+            break;
+          default:
+            emit(state.copyWith(status: FormzStatus.submissionFailure, error: generalErrorOccurred));
+            break;
+        }
+      } catch(e){
+        emit(state.copyWith(status: FormzStatus.submissionFailure, error: generalErrorOccurred));
       }
     }
   }
