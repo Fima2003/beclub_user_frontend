@@ -3,16 +3,20 @@ import 'package:beclub/presentation/screens/signUpScreen/signup_screen.dart';
 import '../../presentation/screens/screens.dart';
 import 'package:flutter/material.dart';
 
-import '../../constants/routesNames.dart';
+import '../../constants/routes_names.dart';
 
 class GeneratedRouter{
 
   static Route<dynamic> generateRoute(RouteSettings settings){
     switch (settings.name){
+      case mainScreenRouteName:
+        return MaterialPageRoute(builder: (_) => const MainScreen());
+      case splashScreenRouteName:
+        return MaterialPageRoute(builder: (_) => const SplashScreenPage());
       case meetPageRouteName:
         return MaterialPageRoute(builder: (_) => const MeetScreen());
       case logInPageRouteName:
-        return MaterialPageRoute(builder: (_) => const LoginScreen());//const LoginScreen());
+        return MaterialPageRoute(builder: (_) => const LoginScreen());
       case alternateMeetPageRouteName:
         return MaterialPageRoute(builder: (_) => const AlternateMeetScreen());
       case alternateLogInPageRouteName:

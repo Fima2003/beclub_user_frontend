@@ -1,5 +1,6 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+
+import '../../../logic/backend/api_calls.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -11,7 +12,7 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
 
   @override
-  void initState() async {
+  void initState() {
     super.initState();
   }
 
@@ -23,9 +24,7 @@ class _MainScreenState extends State<MainScreen> {
       ),
       body: Center(
         child: MaterialButton(
-          onPressed: (){
-            print("Hello");
-          },
+          onPressed: () {},
           child: const Text("Sign out"),
         ),
       ),

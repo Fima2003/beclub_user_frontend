@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 import '../../../constants/palette.dart';
+import '../../../constants/routes_names.dart';
 import '../../../logic/internet/internet_cubit.dart';
 import '../../../logic/signup/sign_up_bloc.dart';
 import '../../../models/animations/shake_animation.dart';
@@ -122,74 +123,81 @@ class _SignUpScreenState extends State<SignUpScreen> {
       ),
       body: BlocProvider(
         create: (context) => SignUpBloc(),
-        child: Padding(
-          padding: const EdgeInsets.all(kMargin),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Container(
-                alignment: Alignment.centerLeft,
-                margin: const EdgeInsets.only(bottom: kMargin),
-                child: Text("Register", style: Theme.of(context).textTheme.displayLarge)
-              ),
-              BlocListener<SignUpBloc, SignUpState>(
-                listener: (ctx, state){
-                  if(state.error == userAlreadyExists || state.error == emailAlreadyExists){
-                    setState(() {
-                      prevIndex = index;
-                      index = 0;
-                    });
-                  }
-                },
-                child: forms[index],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  index != 0 ? IconButton(
-                    onPressed: (){
+        child: BlocListener<SignUpBloc, SignUpState>(
+          listener: (context, state){
+            if(state.status.isSubmissionSuccess){
+              Navigator.popAndPushNamed(context, mainScreenRouteName);
+            }
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(kMargin),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Container(
+                  alignment: Alignment.centerLeft,
+                  margin: const EdgeInsets.only(bottom: kMargin),
+                  child: Text("Register", style: Theme.of(context).textTheme.displayLarge)
+                ),
+                BlocListener<SignUpBloc, SignUpState>(
+                  listener: (ctx, state){
+                    if(state.error == userAlreadyExists || state.error == emailAlreadyExists){
                       setState(() {
                         prevIndex = index;
-                        index--;
+                        index = 0;
                       });
-                    },
-                    icon: const FaIcon(FontAwesomeIcons.arrowLeft, size: 24,)
-                  ) : const SizedBox(width: 50, height: 50,),
-                  Text("${index + 1}/${forms.length}"),
-                  index != forms.length - 1
-                  ? IconButton(
-                    onPressed: (){
-                      if(keys[index].currentState!.validate()){
+                    }
+                  },
+                  child: forms[index],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    index != 0 ? IconButton(
+                      onPressed: (){
                         setState(() {
                           prevIndex = index;
-                          index++;
+                          index--;
                         });
-                      }
-                    },
-                    icon: const FaIcon(FontAwesomeIcons.arrowRight)
-                  )
-                  : const SizedBox(
-                    width: 50,
-                    height: 50,
-                  )
-                ],
-              ),
-              index == forms.length - 1 ? signUpButton(size) : Container(),
-              Builder(
-                builder: (context) {
-                  final signupState = context.watch<SignUpBloc>();
-                  final internetState = context.watch<InternetCubit>();
-                  if(internetState.state is InternetDisconnected){
-                    return errorText("Could not connect to Internet", size);
-                  } else if(signupState.state.error != ""){
-                    return errorText(signupState.state.error, size);
-                  } else {
-                    error = "";
-                    return Container();
-                  }
-                },
-              )
-            ],
+                      },
+                      icon: const FaIcon(FontAwesomeIcons.arrowLeft, size: 24,)
+                    ) : const SizedBox(width: 50, height: 50,),
+                    Text("${index + 1}/${forms.length}"),
+                    index != forms.length - 1
+                    ? IconButton(
+                      onPressed: (){
+                        if(keys[index].currentState!.validate()){
+                          setState(() {
+                            prevIndex = index;
+                            index++;
+                          });
+                        }
+                      },
+                      icon: const FaIcon(FontAwesomeIcons.arrowRight)
+                    )
+                    : const SizedBox(
+                      width: 50,
+                      height: 50,
+                    )
+                  ],
+                ),
+                index == forms.length - 1 ? signUpButton(size) : Container(),
+                Builder(
+                  builder: (context) {
+                    final signupState = context.watch<SignUpBloc>();
+                    final internetState = context.watch<InternetCubit>();
+                    if(internetState.state is InternetDisconnected){
+                      return errorText("Could not connect to Internet", size);
+                    } else if(signupState.state.error != ""){
+                      return errorText(signupState.state.error, size);
+                    } else {
+                      error = "";
+                      return Container();
+                    }
+                  },
+                )
+              ],
+            ),
           ),
         )
       ),

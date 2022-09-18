@@ -1,13 +1,14 @@
 import 'dart:async';
 
+import 'package:beclub/constants/local_storage.dart';
+import 'package:beclub/logic/backend/api_calls.dart';
 import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 import 'package:formz/formz.dart';
-import 'package:localstorage/localstorage.dart';
+import 'package:hive/hive.dart';
 
 import '../../constants/responses/general_responses.dart';
-import '../../constants/routes.dart';
 import '../../models/formzModels/models.dart';
 import '../../constants/responses/sign_up_responses.dart';
 
@@ -107,12 +108,9 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
         state.copyWith(status: FormzStatus.submissionInProgress)
       );
       try {
-        var response = await Dio().post(
-          usersRoute,
-          data: state.toJson(),
-        );
-        final LocalStorage storage = LocalStorage('cluvs');
-        storage.setItem('JWT', response.data['token'].split(' ')[1]);
+        var response = await signup(state.toJson());
+        var box = Hive.box(localStorageKey);
+        box.put(localStorageJWT, response.data['token']);
         emit(state.copyWith(
             status: FormzStatus.submissionSuccess
         ));

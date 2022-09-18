@@ -1,4 +1,4 @@
-import 'package:beclub/constants/routesNames.dart';
+import 'package:beclub/constants/routes_names.dart';
 import 'package:flutter/material.dart';
 
 import '../../constants/palette.dart';

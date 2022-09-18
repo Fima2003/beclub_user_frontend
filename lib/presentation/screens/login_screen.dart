@@ -1,3 +1,4 @@
+import 'package:beclub/constants/routes_names.dart';
 import 'package:flutter/material.dart';
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -125,7 +126,7 @@ class _LoginScreenState extends State<LoginScreen> {
             child: const Center(child: CircularProgressIndicator(color: kWhite,)),
           );
         } else {
-          return Container(
+          return SizedBox(
             width: size.width,
             height: 50,
             child: TextButton(
@@ -194,42 +195,49 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       body: BlocProvider(
         create: (context) => LoginBloc(),
-        child: Form(
-          key: _formKey,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Container(
-                  margin: EdgeInsets.only(bottom: kMargin),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "Log In",
-                      style: Theme.of(context).textTheme.displayLarge,
-                      textAlign: TextAlign.left
+        child: BlocListener<LoginBloc, LoginState>(
+          listener: (context, state){
+            if(state.status.isSubmissionSuccess){
+              Navigator.popAndPushNamed(context, mainScreenRouteName);
+            }
+          },
+          child: Form(
+            key: _formKey,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(bottom: kMargin),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Log In",
+                        style: Theme.of(context).textTheme.displayLarge,
+                        textAlign: TextAlign.left
+                      ),
                     ),
                   ),
-                ),
-                usernameInput(),
-                passwordInput(),
-                submitButton(size),
-                Builder(
-                  builder: (context) {
-                    final loginState = context.watch<LoginBloc>();
-                    final internetState = context.watch<InternetCubit>();
-                    if(internetState.state is InternetDisconnected){
-                      return errorText("Could not connect to Internet");
-                    } else if(loginState.state.error != ""){
-                      return errorText(loginState.state.error);
-                    } else {
-                      error = "";
-                      return Container();
-                    }
-                  },
-                )
-              ],
+                  usernameInput(),
+                  passwordInput(),
+                  submitButton(size),
+                  Builder(
+                    builder: (context) {
+                      final loginState = context.watch<LoginBloc>();
+                      final internetState = context.watch<InternetCubit>();
+                      if(internetState.state is InternetDisconnected){
+                        return errorText("Could not connect to Internet");
+                      } else if(loginState.state.error != ""){
+                        return errorText(loginState.state.error);
+                      } else {
+                        error = "";
+                        return Container();
+                      }
+                    },
+                  )
+                ],
+              ),
             ),
           ),
         ),

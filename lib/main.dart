@@ -1,14 +1,20 @@
+import 'package:beclub/constants/local_storage.dart';
 import 'package:flutter/material.dart';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/adapters.dart';
 
 import './models/router/router.dart';
 import './constants/palette.dart';
-import './constants/routesNames.dart';
+import './constants/routes_names.dart';
 import './logic/internet/internet_cubit.dart';
 
-void main() {
+void main() async {
+  await Hive.initFlutter();
+  await Hive.openBox(localStorageKey);
+
   runApp(MyApp(connectivity: Connectivity()));
 }
 
@@ -18,6 +24,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return MultiBlocProvider(
       providers: [
         BlocProvider<InternetCubit>(
@@ -81,7 +88,7 @@ class MyApp extends StatelessWidget {
           )
         ),
         onGenerateRoute: GeneratedRouter.generateRoute,
-        initialRoute: meetPageRouteName,
+        initialRoute: splashScreenRouteName,
       ),
     );
   }
