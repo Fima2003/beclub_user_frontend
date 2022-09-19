@@ -1,3 +1,4 @@
+import 'package:beclub/constants/responses/general_responses.dart';
 import 'package:beclub/constants/routes_names.dart';
 import 'package:flutter/material.dart';
 
@@ -132,7 +133,7 @@ class _LoginScreenState extends State<LoginScreen> {
             child: TextButton(
               child: const Text("Log in", style: TextStyle(color: kWhite)),
               onPressed: () {
-                if(internetState.state is InternetDisconnected || loginState.state.error != "") {
+                if(internetState.state is InternetDisconnected || loginState.state.error != "" || loginState.state.error == generalErrorOccurred) {
                   shakeKey.currentState?.shake();
                 }else if(_formKey.currentState!.validate()){
                   context.read<LoginBloc>().add(LoginSubmitted());

@@ -11,12 +11,14 @@ Future<bool> isAuthorized() async{
   }
   try {
     await Dio().get(
-        baseRoute,
-        options: Options(
-            headers: {
-              "x-access-token": JWT
-            }
-        )
+      baseRoute,
+      options: Options(
+        headers: {
+          "x-access-token": JWT,
+        },
+        sendTimeout: 2000,
+        receiveTimeout: 2000
+      )
     );
     return Future.value(true);
   } on DioError catch(err){
@@ -27,13 +29,42 @@ Future<bool> isAuthorized() async{
 login(Map<String, dynamic> loginData) async {
   return await Dio().post(
     usersSignInRoute,
-    data: loginData
+    data: loginData,
+    options: Options(
+      sendTimeout: 2000,
+      receiveTimeout: 2000
+    )
   );
 }
 
 signup(Map<String, dynamic> signUpData) async {
   return await Dio().post(
       usersRoute,
-      data: signUpData
+      data: signUpData,
+      options: Options(
+        sendTimeout: 2000,
+        receiveTimeout: 2000
+      )
+  );
+}
+
+fetchClubs(String key) async {
+  var box = Hive.box(localStorageKey);
+  String? JWT = box.get(localStorageJWT);
+  if(JWT == null){
+    return Future.value(false);
+  }
+  return await Dio().get(
+    getClubsRoute,
+    queryParameters: {
+      'nick': key
+    },
+    options: Options(
+        headers: {
+          "x-access-token": JWT
+        },
+        sendTimeout: 2000,
+        receiveTimeout: 2000
+    )
   );
 }

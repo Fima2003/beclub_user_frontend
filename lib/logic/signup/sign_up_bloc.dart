@@ -81,7 +81,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
   _onSignUpCategoriesChange(SignUpCategoriesChange event, Emitter<SignUpState> emit){
     final categories = event.categories;
     emit(
-      state.copyWith(categories: categories)
+      state.copyWith(categories: categories, error: "")
     );
   }
 
@@ -115,6 +115,10 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
             status: FormzStatus.submissionSuccess
         ));
       } on DioError catch(e){
+        if(e.response == null){
+          emit(state.copyWith(status: FormzStatus.submissionFailure, error: generalErrorOccurred));
+          return ;
+        }
         switch(e.response!.statusCode){
           case(700):
             emit(state.copyWith(status: FormzStatus.submissionFailure, error: notAllFieldsAreFilled));

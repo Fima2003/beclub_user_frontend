@@ -87,6 +87,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         box.put(localStorageJWT, response.data['token']);
         emit(state.copyWith(status: FormzStatus.submissionSuccess));
       } on DioError catch(e){
+        if(e.response == null){
+          emit(state.copyWith(status: FormzStatus.submissionFailure, error: generalErrorOccurred));
+          return ;
+        }
         switch(e.response!.statusCode){
           case(404):
             emit(state.copyWith(status: FormzStatus.submissionFailure, error: userDNE));

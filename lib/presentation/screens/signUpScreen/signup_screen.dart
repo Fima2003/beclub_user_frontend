@@ -1,4 +1,3 @@
-import 'package:beclub/constants/responses/sign_up_responses.dart';
 import 'package:flutter/material.dart';
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -8,7 +7,9 @@ import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 import '../../../constants/palette.dart';
+import '../../../constants/responses/general_responses.dart';
 import '../../../constants/routes_names.dart';
+import '../../../constants/responses/sign_up_responses.dart';
 import '../../../logic/internet/internet_cubit.dart';
 import '../../../logic/signup/sign_up_bloc.dart';
 import '../../../models/animations/shake_animation.dart';
@@ -62,7 +63,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             child: TextButton(
               child: const Text("Sign Up", style: TextStyle(color: kWhite)),
               onPressed: () {
-                if(internetState.state is InternetDisconnected || signupState.state.error != "") {
+                if(internetState.state is InternetDisconnected || signupState.state.error != "" || signupState.state.error == generalErrorOccurred) {
                   shakeKey.currentState?.shake();
                 }else if(keys.last.currentState!.validate()){
                   context.read<SignUpBloc>().add(SignUpSubmitted());

@@ -1,6 +1,14 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
+import 'dart:convert';
 
-import '../../../logic/backend/api_calls.dart';
+import 'package:beclub/logic/backend/api_calls.dart';
+import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+import '../../../constants/palette.dart';
+
+part 'search_screen.dart';
+part 'home_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -11,22 +19,26 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
 
-  @override
-  void initState() {
-    super.initState();
-  }
+  int _selectedIndex = 0;
+  final List<Widget> screens = [const HomeScreen(), const SearchScreen()];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Home"),
-      ),
-      body: Center(
-        child: MaterialButton(
-          onPressed: () {},
-          child: const Text("Sign out"),
-        ),
+      body: screens[_selectedIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        items: const<BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: FaIcon(FontAwesomeIcons.house),
+            label: 'home'
+          ),
+          BottomNavigationBarItem(
+            icon: FaIcon(FontAwesomeIcons.magnifyingGlass),
+            label: 'search'
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        onTap: (index) => setState(() {_selectedIndex = index;}),
       ),
     );
   }
