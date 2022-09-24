@@ -1,5 +1,5 @@
-import 'package:beclub/constants/api_routes.dart';
-import 'package:beclub/constants/local_storage.dart';
+import '../../constants/api_routes.dart';
+import '../../constants/local_storage.dart';
 import 'package:dio/dio.dart';
 import 'package:hive/hive.dart';
 
@@ -58,6 +58,27 @@ fetchClubs(String key) async {
     getClubsRoute,
     queryParameters: {
       'nick': key
+    },
+    options: Options(
+        headers: {
+          "x-access-token": JWT
+        },
+        sendTimeout: 2000,
+        receiveTimeout: 2000
+    )
+  );
+}
+
+fetchClub(String nick) async {
+  var box = Hive.box(localStorageKey);
+  String? JWT = box.get(localStorageJWT);
+  if(JWT == null){
+    return Future.value(false);
+  }
+  return await Dio().get(
+    clubsRoute,
+    queryParameters: {
+      'nick': nick
     },
     options: Options(
         headers: {

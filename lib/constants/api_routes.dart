@@ -1,4 +1,4 @@
-const String baseRoute = 'http://192.168.25.96:8080';
+const String baseRoute = 'http://192.168.1.100:8080';
 
 const String apiRoute = '$baseRoute/api';
 

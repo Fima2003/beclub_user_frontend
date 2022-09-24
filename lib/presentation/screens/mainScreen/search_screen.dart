@@ -17,7 +17,7 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(left: 20, right: 20, top: 80),
+      padding: const EdgeInsets.only(left: 20, right: 20, top: 80),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -30,17 +30,25 @@ class _SearchScreenState extends State<SearchScreen> {
               if(_timer != null && _timer!.isActive) _timer?.cancel();
               _timer = Timer(const Duration(milliseconds: 500), () async {
                 if(val != "") {
-                  var response = await fetchClubs(val);
-                  List<dynamic> clubs = jsonDecode(response.toString())['clubs'];
-                  setState((){
-                    results = clubs.map((el){
-                      return {
-                        "_id": el['_id']! as String,
-                        "nick": el['nick']! as String,
-                        "profile_image": el['profile_image']! as String
-                      };
-                    }).toList();
-                  });
+                  try {
+                    var response = await fetchClubs(val);
+                    if(response != false) {
+                      List<dynamic> clubs = jsonDecode(response.toString())['clubs'];
+                      setState(() {
+                        results = clubs != null ? clubs.map((el) {
+                          return {
+                            "_id": el['_id']! as String,
+                            "nick": el['nick']! as String,
+                            "profile_image": el['profile_image']! as String,
+                            "type": el['type']! as String
+                          };
+                        }).toList() : [];
+                      });
+                    }
+                  } on DioError catch(e){
+                    // TODO add handling errors
+                    print(e);
+                  }
                 }
               });
             },
@@ -59,7 +67,7 @@ class _SearchScreenState extends State<SearchScreen> {
               focusedErrorBorder: const UnderlineInputBorder(
                   borderSide: BorderSide(color: kRed)
               ),
-              contentPadding: EdgeInsets.all(11),
+              contentPadding: const EdgeInsets.all(11),
               suffixIcon: IconButton(
                 icon: FaIcon(
                   FontAwesomeIcons.circleXmark,
@@ -68,25 +76,27 @@ class _SearchScreenState extends State<SearchScreen> {
                 onPressed: (){
                   if(_timer != null && _timer!.isActive) _timer?.cancel();
                   searchController.clear();
-                  setState(() {});
+                  setState(() {
+                    results = [];
+                  });
                 },
               )
             ),
           ),
           results.isNotEmpty
-            ? SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: results.map((e) => SearchResult(
-                  name: e['nick']!,
-                  url: e['profile_image']!,
-                  id: e['_id']!,
-                )).toList(),
-              ),
-            )
+            ? ListView.builder(
+                itemCount: results.length,
+                shrinkWrap: true,
+                itemBuilder: (BuildContext context, int index) {
+                  return SearchResult(
+                    nick: results[index]['nick']!,
+                    url: results[index]['profile_image']!,
+                    type: results[index]['type']!
+                  );
+                },
+              )
             : Container(
-                margin: EdgeInsets.only(top: 20),
+                margin: const EdgeInsets.only(top: 20),
                 alignment: Alignment.center,
                 child: Text("No results found", style: Theme.of(context).textTheme.bodyMedium)
               )
@@ -103,41 +113,27 @@ class _SearchScreenState extends State<SearchScreen> {
 }
 
 class SearchResult extends StatelessWidget {
-  final String name;
+  final String nick;
   final String url;
-  final String id;
-  const SearchResult({Key? key, required this.name, required this.url, required this.id}) : super(key: key);
+  final String type;
+  const SearchResult({Key? key, required this.nick, required this.url, required this.type}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-    return MaterialButton(
-      padding: EdgeInsets.all(0),
-      onPressed: (){
-        print(id);
+    return ListTile(
+      leading: CircleAvatar(
+        radius: 20,
+        backgroundColor: Colors.transparent,
+        backgroundImage: NetworkImage(url),
+      ),
+      title: Text(nick),
+      trailing: clubs()[type]?['icon'] as Widget,
+      onTap: (){
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ClubScreen(nick))
+        );
       },
-      minWidth: size.width*0.9,
-      height: size.height*0.08,
-      shape: Border(
-        bottom: BorderSide(
-          color: kBlack.withOpacity(.2)
-        )
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            margin: const EdgeInsets.only(right: 10),
-            child: CircleAvatar(
-              radius: 20,
-              backgroundColor: Colors.transparent,
-              backgroundImage: NetworkImage(url),
-            ),
-          ),
-          Text(name, style: Theme.of(context).textTheme.bodyMedium,)
-        ],
-      ),
     );
   }
 }

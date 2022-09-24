@@ -1,4 +1,4 @@
-import 'package:beclub/presentation/screens/signUpScreen/signup_screen.dart';
+import '../../presentation/screens/signUpScreen/signup_screen.dart';
 
 import '../../presentation/screens/screens.dart';
 import 'package:flutter/material.dart';

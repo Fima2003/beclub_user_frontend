@@ -1,5 +1,5 @@
-import 'package:beclub/constants/responses/general_responses.dart';
-import 'package:beclub/constants/routes_names.dart';
+import '../../constants/responses/general_responses.dart';
+import '../../constants/routes_names.dart';
 import 'package:flutter/material.dart';
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';

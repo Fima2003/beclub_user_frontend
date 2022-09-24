@@ -1,4 +1,4 @@
-import 'package:beclub/constants/local_storage.dart';
+import '../../constants/local_storage.dart';
 import 'package:flutter/material.dart';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -83,8 +83,11 @@ class MyApp extends StatelessWidget {
             style: OutlinedButton.styleFrom(
               backgroundColor: kWhite,
               side: const BorderSide(color: kBlack, width: 2),
-              textStyle: const TextStyle(color: kBlack, fontWeight: FontWeight.w700, fontSize: 20)
+              // textStyle: const TextStyle(color: kBlack, fontWeight: FontWeight.w700, fontSize: 20)
             )
+          ),
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Colors.transparent
           )
         ),
         onGenerateRoute: GeneratedRouter.generateRoute,

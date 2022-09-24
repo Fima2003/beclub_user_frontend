@@ -8,7 +8,7 @@ class Email extends FormzInput<String, EmailValidationError> {
 
   // Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character:
   static final _emailRegex = RegExp(
-    r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+    r'^[\w\-\.]+@([\w-]+\.)+[\w-]{2,4}$',
   );
 
   @override

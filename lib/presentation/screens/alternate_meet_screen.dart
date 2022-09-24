@@ -1,7 +1,7 @@
-import 'package:beclub/constants/routes_names.dart';
 import 'package:flutter/material.dart';
 
 import '../../constants/palette.dart';
+import '../../constants/routes_names.dart';
 
 class AlternateMeetScreen extends StatelessWidget {
   const AlternateMeetScreen({Key? key}) : super(key: key);

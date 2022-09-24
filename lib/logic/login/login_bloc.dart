@@ -1,6 +1,6 @@
-import 'package:beclub/constants/local_storage.dart';
-import 'package:beclub/constants/responses/login_responses.dart';
-import 'package:beclub/logic/backend/api_calls.dart';
+import '../../constants/local_storage.dart';
+import '../../constants/responses/login_responses.dart';
+import '../backend/api_calls.dart';
 import 'package:dio/dio.dart';
 import 'package:hive/hive.dart';
 

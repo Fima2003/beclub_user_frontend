@@ -1,5 +1,5 @@
-import 'package:beclub/presentation/screens/mainScreen/main_screen.dart';
-import 'package:beclub/presentation/screens/meet_screen.dart';
+import '../../presentation/screens/mainScreen/main_screen.dart';
+import '../../presentation/screens/meet_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:splashscreen/splashscreen.dart';
 

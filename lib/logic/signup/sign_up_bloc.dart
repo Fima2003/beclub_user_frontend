@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:beclub/constants/local_storage.dart';
-import 'package:beclub/logic/backend/api_calls.dart';
+import '../../constants/local_storage.dart';
+import '../../logic/backend/api_calls.dart';
 import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
