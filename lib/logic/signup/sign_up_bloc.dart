@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import '../../constants/local_storage.dart';
-import '../../logic/backend/api_calls.dart';
 import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
@@ -11,6 +10,7 @@ import 'package:hive/hive.dart';
 import '../../constants/responses/general_responses.dart';
 import '../../models/formzModels/models.dart';
 import '../../constants/responses/sign_up_responses.dart';
+import '../../models/repoClass/dio_client.dart';
 
 part 'sign_up_event.dart';
 part 'sign_up_state.dart';
@@ -108,7 +108,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
         state.copyWith(status: FormzStatus.submissionInProgress)
       );
       try {
-        var response = await signup(state.toJson());
+        var response = await DioClient().signup(state.toJson());
         var box = Hive.box(localStorageKey);
         box.put(localStorageJWT, response.data['token']);
         emit(state.copyWith(

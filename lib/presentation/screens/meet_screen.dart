@@ -38,7 +38,7 @@ class MeetScreen extends StatelessWidget {
                       onPressed: (){
                         Navigator.of(context).pushNamed(logInPageRouteName);
                       },
-                      child: const Text("Log In", style: TextStyle(color: kWhite)),
+                      child: const Text("Log In", style: TextStyle(color: kWhite, fontSize: 20, fontWeight: FontWeight.w700)),
                     ),
                   ),
                   Container(
@@ -48,7 +48,7 @@ class MeetScreen extends StatelessWidget {
                       onPressed: (){
                         Navigator.of(context).pushNamed(signUpPageRouteName);
                       },
-                      child: const Text("Sign Up", style: TextStyle(color: kBlack))
+                      child: const Text("Sign Up", style: TextStyle(color: kBlack, fontSize: 20, fontWeight: FontWeight.w700))
                     )
                   )
                 ],

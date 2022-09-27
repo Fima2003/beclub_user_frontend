@@ -31,7 +31,7 @@ class _SearchScreenState extends State<SearchScreen> {
               _timer = Timer(const Duration(milliseconds: 500), () async {
                 if(val != "") {
                   try {
-                    var response = await fetchClubs(val);
+                    var response = await DioClient().fetchClubs(val);
                     if(response != false) {
                       List<dynamic> clubs = jsonDecode(response.toString())['clubs'];
                       setState(() {
@@ -53,8 +53,8 @@ class _SearchScreenState extends State<SearchScreen> {
               });
             },
             decoration: InputDecoration(
-              labelText: "Enter username of a club",
-              labelStyle: Theme.of(context).textTheme.labelSmall!.copyWith(color: kBlack.withOpacity(0.5)),
+              hintText: "Enter username of a club",
+              hintStyle: Theme.of(context).textTheme.labelSmall!.copyWith(color: kBlack.withOpacity(0.5)),
               enabledBorder: const UnderlineInputBorder(
                   borderSide: BorderSide(color: kBlack)
               ),

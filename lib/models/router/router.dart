@@ -17,10 +17,6 @@ class GeneratedRouter{
         return MaterialPageRoute(builder: (_) => const MeetScreen());
       case logInPageRouteName:
         return MaterialPageRoute(builder: (_) => const LoginScreen());
-      case alternateMeetPageRouteName:
-        return MaterialPageRoute(builder: (_) => const AlternateMeetScreen());
-      case alternateLogInPageRouteName:
-        return MaterialPageRoute(builder: (_) => const AlternateLoginScreen());
       case signUpPageRouteName:
         return MaterialPageRoute(builder: (_) => const SignUpScreen());
       case '/test':

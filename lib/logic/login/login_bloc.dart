@@ -1,6 +1,6 @@
 import '../../constants/local_storage.dart';
 import '../../constants/responses/login_responses.dart';
-import '../backend/api_calls.dart';
+import '../../models/repoClass/dio_client.dart';
 import 'package:dio/dio.dart';
 import 'package:hive/hive.dart';
 
@@ -82,7 +82,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           status: FormzStatus.submissionInProgress
       ));
       try {
-        var response = await login(state.toJson());
+        var response = await DioClient().login(state.toJson());
         var box = Hive.box(localStorageKey);
         box.put(localStorageJWT, response.data['token']);
         emit(state.copyWith(status: FormzStatus.submissionSuccess));

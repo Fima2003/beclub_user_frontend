@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
 
 import './models/router/router.dart';
 import './constants/palette.dart';
 import './constants/routes_names.dart';
 import './logic/internet/internet_cubit.dart';
+import 'logic/user/user_bloc.dart';
 
 void main() async {
   await Hive.initFlutter();
@@ -31,6 +31,9 @@ class MyApp extends StatelessWidget {
           lazy: false,
           create: (context) => InternetCubit(connectivity: connectivity),
         ),
+        BlocProvider<UserBloc>(
+          create: (context) => UserBloc(),
+        )
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

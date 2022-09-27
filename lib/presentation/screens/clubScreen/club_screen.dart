@@ -3,12 +3,12 @@ import 'dart:convert';
 import 'package:cluves/models/repoClass/promotion.dart';
 import 'package:expandable_text/expandable_text.dart';
 
-import '../../../logic/backend/api_calls.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 import '../../../constants/club_types.dart';
 import '../../../constants/palette.dart';
+import '../../../models/repoClass/dio_client.dart';
 
 part './top_panel.dart';
 part './bottom_panel.dart';
@@ -27,7 +27,7 @@ class _ClubScreenState extends State<ClubScreen> {
 
   @override
   void initState() {
-    _value = fetchClub(widget.nick);
+    _value = DioClient().fetchClub(widget.nick);
     super.initState();
   }
 

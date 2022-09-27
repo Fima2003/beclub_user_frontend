@@ -1,10 +1,10 @@
+import '../../models/repoClass/dio_client.dart';
 import '../../presentation/screens/mainScreen/main_screen.dart';
 import '../../presentation/screens/meet_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:splashscreen/splashscreen.dart';
 
 import '../../constants/palette.dart';
-import '../../logic/backend/api_calls.dart';
 
 class SplashScreenPage extends StatefulWidget {
   const SplashScreenPage({Key? key}) : super(key: key);
@@ -16,7 +16,7 @@ class SplashScreenPage extends StatefulWidget {
 class _SplashScreenPageState extends State<SplashScreenPage> {
 
   Future<Widget> loadFromFuture() async {
-    return await isAuthorized() ? Future.value(const MainScreen()) : Future.value(const MeetScreen());
+    return await DioClient().isAuthorized() ? Future.value(const MainScreen()) : Future.value(const MeetScreen());
   }
 
   @override

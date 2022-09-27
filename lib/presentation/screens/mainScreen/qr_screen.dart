@@ -1,13 +1,16 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share/share.dart';
 
 import '../../../constants/palette.dart';
+import '../../../logic/user/user_bloc.dart';
 
 class QrScreen extends StatefulWidget {
   const QrScreen({Key? key}) : super(key: key);
@@ -47,41 +50,46 @@ class _QrScreenState extends State<QrScreen> {
     Size size = MediaQuery.of(context).size;
     return Container(
       width: size.width,
-      padding: EdgeInsets.only(top: 100, left: 16, right: 16),
+      padding: const EdgeInsets.only(top: 100, left: 16, right: 16),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Screenshot(
-            controller: screenshotController,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(40),
-              child: Column(
-                children: [
-                  QrImage(
-                    padding: const EdgeInsets.all(20),
-                    gapless: true,
-                    data: "yellow",
-                    size: 356,
-                    backgroundColor: const Color(0xffefefef),
-                    embeddedImage: const AssetImage('assets/CluvsLogoInverse.jpg'),
-                    embeddedImageStyle: QrEmbeddedImageStyle(
-                      size: Size.square(76),
-                    ),
-                    errorCorrectionLevel: QrErrorCorrectLevel.H,
-                    dataModuleStyle: const QrDataModuleStyle(
-                      dataModuleShape: QrDataModuleShape.square,
-                      color: k1
-                    ),
-                    eyeStyle: const QrEyeStyle(
-                      eyeShape: QrEyeShape.circle,
-                      color: k1
-                    ),
-                    version: QrVersions.auto,
-                  )
-                ],
-              ),
-            ),
+          BlocBuilder<UserBloc, UserState>(
+            builder: (context, state) {
+              print(state);
+              return Screenshot(
+                controller: screenshotController,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(40),
+                  child: Column(
+                    children: [
+                      QrImage(
+                        padding: const EdgeInsets.all(20),
+                        gapless: true,
+                        data: '{nick: ${state.nick}}',
+                        size: 356,
+                        backgroundColor: const Color(0xffefefef),
+                        embeddedImage: const AssetImage('assets/CluvsLogoInverse.jpg'),
+                        embeddedImageStyle: QrEmbeddedImageStyle(
+                          size: const Size.square(76),
+                        ),
+                        errorCorrectionLevel: QrErrorCorrectLevel.H,
+                        dataModuleStyle: const QrDataModuleStyle(
+                          dataModuleShape: QrDataModuleShape.square,
+                          color: k1
+                        ),
+                        eyeStyle: const QrEyeStyle(
+                          eyeShape: QrEyeShape.circle,
+                          color: k1
+                        ),
+                        version: QrVersions.auto,
+                      )
+                    ],
+                  ),
+                ),
+              );
+            },
           ),
           const Padding(
             padding: EdgeInsets.only(top: 15, left: 10, right: 10),
