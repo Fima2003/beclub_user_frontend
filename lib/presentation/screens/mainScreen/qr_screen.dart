@@ -40,9 +40,7 @@ class _QrScreenState extends State<QrScreen> {
           }
         } catch (error) {}
       }
-    }).catchError((onError) {
-      print('Error --->> $onError');
-    });
+    }).catchError((onError) {});
   }
 
   @override
@@ -50,49 +48,43 @@ class _QrScreenState extends State<QrScreen> {
     Size size = MediaQuery.of(context).size;
     return Container(
       width: size.width,
-      padding: const EdgeInsets.only(top: 100, left: 16, right: 16),
+      padding: const EdgeInsets.only(top: 50),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           BlocBuilder<UserBloc, UserState>(
             builder: (context, state) {
-              print(state);
               return Screenshot(
                 controller: screenshotController,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(40),
-                  child: Column(
-                    children: [
-                      QrImage(
-                        padding: const EdgeInsets.all(20),
-                        gapless: true,
-                        data: '{nick: ${state.nick}}',
-                        size: 356,
-                        backgroundColor: const Color(0xffefefef),
-                        embeddedImage: const AssetImage('assets/CluvsLogoInverse.jpg'),
-                        embeddedImageStyle: QrEmbeddedImageStyle(
-                          size: const Size.square(76),
-                        ),
-                        errorCorrectionLevel: QrErrorCorrectLevel.H,
-                        dataModuleStyle: const QrDataModuleStyle(
-                          dataModuleShape: QrDataModuleShape.square,
-                          color: k1
-                        ),
-                        eyeStyle: const QrEyeStyle(
-                          eyeShape: QrEyeShape.circle,
-                          color: k1
-                        ),
-                        version: QrVersions.auto,
-                      )
-                    ],
+                  child: QrImage(
+                    padding: const EdgeInsets.all(20),
+                    gapless: true,
+                    data: '{nick: ${state.nick}}',
+                    backgroundColor: const Color(0xffefefef),
+                    embeddedImage: const AssetImage('assets/CluvsLogoInverse.jpg'),
+                    embeddedImageStyle: QrEmbeddedImageStyle(
+                      size: Size.square(size.width/5),
+                    ),
+                    errorCorrectionLevel: QrErrorCorrectLevel.H,
+                    dataModuleStyle: const QrDataModuleStyle(
+                      dataModuleShape: QrDataModuleShape.square,
+                      color: k1
+                    ),
+                    eyeStyle: const QrEyeStyle(
+                      eyeShape: QrEyeShape.circle,
+                      color: k1
+                    ),
+                    version: QrVersions.auto,
                   ),
                 ),
               );
             },
           ),
           const Padding(
-            padding: EdgeInsets.only(top: 15, left: 10, right: 10),
+            padding: EdgeInsets.only(top: 15),
             child: Text(
               "Share this bar-code to get points. It’s okay, if it is your first time at this place. Just scan, everything will be handled by us",
               textAlign: TextAlign.center,
@@ -104,7 +96,6 @@ class _QrScreenState extends State<QrScreen> {
           ),
           Expanded(
             child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 10),
               alignment: Alignment.bottomCenter,
               child: OutlinedButton(
                 style: OutlinedButton.styleFrom(

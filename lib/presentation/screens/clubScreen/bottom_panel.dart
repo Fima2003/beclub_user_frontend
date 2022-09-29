@@ -1,9 +1,8 @@
 part of './club_screen.dart';
 
 class BottomPanel extends StatefulWidget {
-  final String type;
-  final List<LoyaltyPromotion> promotions;
-  const BottomPanel({Key? key, required this.type, required this.promotions}) : super(key: key);
+  final Club club;
+  const BottomPanel({Key? key, required this.club}) : super(key: key);
 
   @override
   State<BottomPanel> createState() => _BottomPanelState();
@@ -18,7 +17,7 @@ class _BottomPanelState extends State<BottomPanel> {
       decoration: BoxDecoration(
         border: Border(
           top: BorderSide(
-            color: clubs()![widget.type]['primary_color'] as Color,
+            color: clubs()![widget.club.type]['primary_color'] as Color,
             width: 2
           )
         ),
@@ -28,16 +27,16 @@ class _BottomPanelState extends State<BottomPanel> {
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 10),
-            child: Text("Promotions", style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: clubs()![widget.type]['primary_color'] as Color),textAlign: TextAlign.center,)
+            child: Text("Promotions", style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: clubs()![widget.club.type]['primary_color'] as Color),textAlign: TextAlign.center,)
           ),
           Expanded(
-            child: widget.promotions.isNotEmpty ? GridView.count(
+            child: widget.club.promotions.isNotEmpty ? GridView.count(
               crossAxisCount: 3,
               crossAxisSpacing: 3,
               mainAxisSpacing: 3,
               scrollDirection: Axis.vertical,
               physics: const BouncingScrollPhysics(),
-              children: widget.promotions.map(
+              children: widget.club.promotions.map(
                 (promotion){
                   return Stack(
                     children: [
@@ -60,7 +59,7 @@ class _BottomPanelState extends State<BottomPanel> {
                           children: [
                             Align(
                               alignment: Alignment.center,
-                              child: clubs(height: 40, width: 40)[widget.type]['promotion_icon'],
+                              child: clubs(height: 40, width: 40)[widget.club.type]['promotion_icon'],
                             ),
                             Center(
                               child: Padding(

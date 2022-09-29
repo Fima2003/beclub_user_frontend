@@ -8,6 +8,7 @@ import 'package:flutter_svg/svg.dart';
 
 import '../../../constants/club_types.dart';
 import '../../../constants/palette.dart';
+import '../../../models/repoClass/club.dart';
 import '../../../models/repoClass/dio_client.dart';
 
 part './top_panel.dart';
@@ -23,11 +24,12 @@ class ClubScreen extends StatefulWidget {
 
 class _ClubScreenState extends State<ClubScreen> {
 
-  late Future<dynamic> _value;
+  late Future<Club> _value;
 
   @override
   void initState() {
-    _value = DioClient().fetchClub(widget.nick);
+    var result = DioClient().fetchClub(widget.nick);
+    _value = result;
     super.initState();
   }
 
@@ -46,48 +48,35 @@ class _ClubScreenState extends State<ClubScreen> {
         title: Text(widget.nick, style: Theme.of(context).textTheme.bodyMedium),
         elevation: 0,
       ),
-      body: FutureBuilder(
+      body: FutureBuilder<Club>(
         future: _value,
         builder: (context, snapshot) {
-          if(snapshot.hasError){
+          if(snapshot.hasError || snapshot.data == Club.unknown()){
+            print("In the dull section: ${snapshot.data}");
             return Center(
               child: Text(
-                "Could not get the club information",
+                "Could not fetch the club information",
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
             );
           } else if (snapshot.hasData) {
-            var data = jsonDecode(snapshot.data.toString());
+            print("In the ok section: ${snapshot.data}");
+            Club club = snapshot.data!;
+            print(club);
+            if(club == Club.unknown()){
+              return Center(
+                child: Text(
+                  "Could not fetch the club information",
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+              );
+            }
             return Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                TopPanel(
-                  url: data['profile_image'] ?? "null",
-                  type: data["type"] ?? "unknown",
-                  name: data["name"] ?? "No name",
-                  website: data["website"] ?? "no website",
-                  description: data['description'] ?? "No description",
-                ),
+                TopPanel(club: club),
                 Expanded(
-                  child: BottomPanel(
-                    type: data["type"] ?? "unknown",
-                    promotions: data["promotions"] is List<dynamic> ? List<LoyaltyPromotion>.from(
-                      data['promotions']?.map((el) => LoyaltyPromotion.fromJson(el))
-                    ) ?? <LoyaltyPromotion>[
-                        LoyaltyPromotion(mediaUrl: "https://images.pexels.com/photos/326055/pexels-photo-326055.jpeg?auto=compress&cs=tinysrgb&w=1600", description: "This is the description", points: 22),
-                        LoyaltyPromotion(mediaUrl: "https://images.pexels.com/photos/326055/pexels-photo-326055.jpeg?auto=compress&cs=tinysrgb&w=1600", description: "This is the description", points: 22),
-                        LoyaltyPromotion(mediaUrl: "https://images.pexels.com/photos/326055/pexels-photo-326055.jpeg?auto=compress&cs=tinysrgb&w=1600", description: "This is the description", points: 22),
-                        LoyaltyPromotion(mediaUrl: "https://images.pexels.com/photos/326055/pexels-photo-326055.jpeg?auto=compress&cs=tinysrgb&w=1600", description: "This is the description", points: 22),
-                        LoyaltyPromotion(mediaUrl: "https://images.pexels.com/photos/326055/pexels-photo-326055.jpeg?auto=compress&cs=tinysrgb&w=1600", description: "This is the description", points: 22),
-                        LoyaltyPromotion(mediaUrl: "https://images.pexels.com/photos/326055/pexels-photo-326055.jpeg?auto=compress&cs=tinysrgb&w=1600", description: "This is the description", points: 22),
-                        LoyaltyPromotion(mediaUrl: "https://images.pexels.com/photos/326055/pexels-photo-326055.jpeg?auto=compress&cs=tinysrgb&w=1600", description: "This is the description", points: 22),
-                        LoyaltyPromotion(mediaUrl: "https://images.pexels.com/photos/326055/pexels-photo-326055.jpeg?auto=compress&cs=tinysrgb&w=1600", description: "This is the description", points: 22),
-                        LoyaltyPromotion(mediaUrl: "https://images.pexels.com/photos/326055/pexels-photo-326055.jpeg?auto=compress&cs=tinysrgb&w=1600", description: "This is the description", points: 22),
-                        LoyaltyPromotion(mediaUrl: "https://images.pexels.com/photos/326055/pexels-photo-326055.jpeg?auto=compress&cs=tinysrgb&w=1600", description: "This is the description", points: 22),
-                        LoyaltyPromotion(mediaUrl: "https://images.pexels.com/photos/326055/pexels-photo-326055.jpeg?auto=compress&cs=tinysrgb&w=1600", description: "This is the description", points: 22),
-                        LoyaltyPromotion(mediaUrl: "https://images.pexels.com/photos/326055/pexels-photo-326055.jpeg?auto=compress&cs=tinysrgb&w=1600", description: "This is the description", points: 22)
-                      ] : [],
-                  ),
+                  child: BottomPanel(club: club),
                 )
               ],
             );

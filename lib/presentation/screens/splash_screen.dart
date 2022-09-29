@@ -1,4 +1,8 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../logic/user/user_bloc.dart';
 import '../../models/repoClass/dio_client.dart';
+import '../../models/repoClass/user.dart';
 import '../../presentation/screens/mainScreen/main_screen.dart';
 import '../../presentation/screens/meet_screen.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +20,19 @@ class SplashScreenPage extends StatefulWidget {
 class _SplashScreenPageState extends State<SplashScreenPage> {
 
   Future<Widget> loadFromFuture() async {
-    return await DioClient().isAuthorized() ? Future.value(const MainScreen()) : Future.value(const MeetScreen());
+    User result = await DioClient().getSelf();
+    if(result != User.unknown()){
+      return Future.value(
+        BlocBuilder<UserBloc, UserState>(
+          builder: (BuildContext context, state) {
+            context.read<UserBloc>().add(UserEventManyFieldsChanged(result));
+            return const MainScreen();
+          },
+        ),
+      );
+    }else {
+      return Future.value(const MeetScreen());
+    }
   }
 
   @override

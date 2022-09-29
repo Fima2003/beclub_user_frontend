@@ -4,14 +4,12 @@ import 'package:equatable/equatable.dart';
 
 class User extends Equatable{
 
-  String nick;
-  String email;
-  String name;
+  final String nick;
+  final String email;
 
   factory User.fromJson(Map<String, dynamic> json) => User(
     nick: json['nick'],
     email: json['email'],
-    name: json['name']
   );
 
   factory User.fromString(String str) => User.fromJson(jsonDecode(str));
@@ -19,17 +17,17 @@ class User extends Equatable{
   Map<String, dynamic> toJson() => {
     nick: nick,
     email: email,
-    name: name
   };
 
-  User({required this.nick, required this.email, required this.name});
-  factory User.unknown() => User(nick: "", email: "", name: "");
+  const User({required this.nick, required this.email});
+
+  factory User.unknown() => const User(nick: "", email: "");
 
   @override
   String toString() {
-    return "nick: $nick\nname: $name\nemail: $email";
+    return "nick: $nick\nemail: $email";
   }
 
   @override
-  List<Object?> get props => [nick, name, email];
+  List<Object?> get props => [nick, email];
 }

@@ -30,6 +30,7 @@ dependencies:
   share: ^2.0.4
   path_provider: ^2.0.11
   screenshot: ^1.2.3
+  flutter_secure_storage: ^6.0.0
 
 dev_dependencies:
   flutter_test:

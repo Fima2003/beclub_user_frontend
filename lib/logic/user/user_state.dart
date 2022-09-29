@@ -2,16 +2,16 @@ part of 'user_bloc.dart';
 
 class UserState extends Equatable {
 
-  final String name, nick, email;
+  final String nick, email, error;
 
-  const UserState({this.name = "", this.nick = "", this.email = ""});
+  const UserState({this.nick = "", this.email = "", this.error = ""});
 
-  UserState copyWith({String? name, String? nick, String? email}) => UserState(
-    name: name ?? this.name,
+  UserState copyWith({String? nick, String? email, String? error}) => UserState(
     nick: nick ?? this.nick,
-    email: email ?? this.email
+    email: email ?? this.email,
+    error: error ?? this.error
   );
 
   @override
-  List<Object> get props => [name, nick, email];
+  List<Object> get props => [nick, email];
 }

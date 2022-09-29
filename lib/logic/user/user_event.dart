@@ -2,15 +2,6 @@ part of 'user_bloc.dart';
 
 abstract class UserEvent extends Equatable {}
 
-class UserEventNameChanged extends UserEvent{
-  final String name;
-
-  UserEventNameChanged(this.name);
-
-  @override
-  List<Object?> get props => [name];
-}
-
 class UserEventNickChanged extends UserEvent{
   final String nick;
 
@@ -32,8 +23,14 @@ class UserEventEmailChanged extends UserEvent{
 class UserEventManyFieldsChanged extends UserEvent{
   final User user;
 
-  UserEventManyFieldsChanged( this.user);
+  UserEventManyFieldsChanged(this.user);
 
   @override
   List<Object?> get props => [user];
+}
+
+class UserEventFetchInformation extends UserEvent{
+  @override
+  List<Object?> get props => [];
+
 }

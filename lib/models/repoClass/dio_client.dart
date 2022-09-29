@@ -1,13 +1,16 @@
-import 'dart:convert';
-
+import 'package:cluves/models/repoClass/club_list_item.dart';
 import 'package:dio/dio.dart';
 
 import '../../constants/local_storage.dart';
 import 'package:hive/hive.dart';
 
+import '../../constants/responses/general_responses.dart';
+import '../../constants/responses/login_responses.dart';
+import '../../constants/responses/sign_up_responses.dart';
+import 'club.dart';
 import 'user.dart';
 
-const String baseRoute = 'http://132.69.192.170:8080';
+const String baseRoute = 'http://192.168.26.96:8080';
 
 const String apiRoute = '$baseRoute/api';
 
@@ -24,103 +27,109 @@ class DioClient{
       connectTimeout: 4000
     )
   )..interceptors.add(Login());
-  var box = Hive.box(localStorageKey);
-  String? _JWT;
 
-  DioClient(){
-    _JWT = box.get(localStorageJWT);
-  }
+
+  DioClient();
 
   login(Map<String, dynamic> loginData) async {
-    return await _dio.post(
-      usersSignInRoute,
-      data: loginData,
-    );
+    try {
+      Response result = await _dio.post(
+        usersSignInRoute,
+        data: loginData,
+      );
+      return result.data as Map<String, dynamic>;
+    }on DioError catch(e){
+      if(e.response == null){
+        return {"error": generalErrorOccurred};
+      }
+      switch(e.response!.statusCode){
+        case(404):
+          return {"error": userDNE};
+        case(700):
+          return {"error": notAllFieldsAreFilled};
+        case(704):
+          return {"error": wrongPassword};
+        default:
+          return {"error": generalErrorOccurred};
+      }
+    } catch(e) {
+      return {"error": generalErrorOccurred};
+    }
   }
 
   signup(Map<String, dynamic> signUpData) async {
-    return await _dio.post(
-      usersRoute,
-      data: signUpData,
-    );
-  }
-
-
-  isAuthorized() async{
-    if(_JWT == null){
-      return Future.value(false);
-    }
     try {
-      await _dio.get(
-        baseRoute,
-        options: Options(
-          headers: {
-            "x-access-token": _JWT,
-          },
-        )
+      return await _dio.post(
+        usersRoute,
+        data: signUpData,
       );
-      return Future.value(true);
-    } on DioError catch(err){
-      return Future.value(false);
+    } on DioError catch(e){
+      if(e.response == null){
+        return {"error": generalErrorOccurred};
+      }
+      switch(e.response!.statusCode){
+        case(700):
+          return {"error": notAllFieldsAreFilled};
+        case(703):
+          return {"error": userAlreadyExists};
+        case(705):
+          return {"error": emailAlreadyExists};
+        default:
+          return {"error": generalErrorOccurred};
+      }
+    } catch(e){
+      return {"error": generalErrorOccurred};
     }
   }
 
-  getSelf() async{
-    if(_JWT == null){
-      return User.unknown();
-    }
+  getSelf() async {
     try{
-      Response<dynamic> result = await _dio.get(
-        usersRoute,
-        options: Options(
-          headers: {
-            "x-access-token": _JWT,
-          }
-        )
-      );
+      Response<dynamic> result = await _dio.get(usersRoute);
       User user = User.fromJson(result.data);
       return user;
-    }catch (e) {
+    } catch (e) {
       return User.unknown();
     }
   }
 
-  fetchClub(String nick) async {
-    var box = Hive.box(localStorageKey);
-    String? JWT = box.get(localStorageJWT);
-    if(JWT == null){
-      return Future.value(false);
+  Future<Club> fetchClub(String nick) async {
+    try {
+      Response response = await _dio.get(
+          clubsRoute,
+          queryParameters: {
+            'nick': nick
+          }
+      );
+      return Club.fromJson(response.data as Map<String, dynamic>);
+    } catch(e){
+      print(e);
+      return Club.unknown();
     }
-    return await _dio.get(
-        clubsRoute,
-        queryParameters: {
-          'nick': nick
-        },
-        options: Options(
-          headers: {
-            "x-access-token": JWT
-          },
-        )
-    );
   }
 
   fetchClubs(String key) async {
-    var box = Hive.box(localStorageKey);
-    String? JWT = box.get(localStorageJWT);
-    if(JWT == null){
-      return Future.value(false);
+    try {
+      Response response = await _dio.get(
+          getClubsRoute,
+          queryParameters: {
+            'nick': key
+          }
+      );
+      return List<ClubListItem>.from(response.data['clubs'].map((el) => ClubListItem(nick: el['nick'], profileImage: el['profile_image'], type: el['type'])));
+    }catch(e){
+      return <ClubListItem>[];
     }
-    return await _dio.get(
-      getClubsRoute,
-      queryParameters: {
-        'nick': key
-      },
-      options: Options(
-        headers: {
-          "x-access-token": JWT
-        },
-      )
-    );
+  }
+
+  deleteAccount(Map<String, dynamic> data) async {
+    try {
+      return await _dio.delete(
+        usersRoute,
+        data: data,
+      );
+    } on DioError catch(err) {
+      print(err.message);
+    }
   }
 }
 
@@ -128,16 +137,27 @@ class Login extends Interceptor{
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+    if(_needAuthorizationHeader(options)){
+      var box = Hive.box(localStorageKey);
+      String? jwt = box.get(localStorageJWT);
+      options.headers['x-access-token'] = jwt;
+    }
     return handler.next(options);
   }
 
-  @override
-  void onError(DioError err, ErrorInterceptorHandler handler) {
-    return handler.next(err);
+  bool _needAuthorizationHeader(RequestOptions options) {
+    if (usersSignInRoute == options.path ||
+        (usersRoute == options.path && options.method == "POST")
+    ) {
+      return false;
+    } else {
+      return true;
+    }
   }
 
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
+    // print(response);
     return handler.next(response);
   }
 }

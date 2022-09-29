@@ -81,32 +81,13 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       emit(state.copyWith(
           status: FormzStatus.submissionInProgress
       ));
-      try {
-        var response = await DioClient().login(state.toJson());
+      Map<String, dynamic> data = await DioClient().login(state.toJson());
+      if(data['token'] != null) {
         var box = Hive.box(localStorageKey);
-        box.put(localStorageJWT, response.data['token']);
+        box.put(localStorageJWT, data['token']);
         emit(state.copyWith(status: FormzStatus.submissionSuccess));
-      } on DioError catch(e){
-        if(e.response == null){
-          emit(state.copyWith(status: FormzStatus.submissionFailure, error: generalErrorOccurred));
-          return ;
-        }
-        switch(e.response!.statusCode){
-          case(404):
-            emit(state.copyWith(status: FormzStatus.submissionFailure, error: userDNE));
-            break;
-          case(700):
-            emit(state.copyWith(status: FormzStatus.submissionFailure, error: notAllFieldsAreFilled));
-            break;
-          case(704):
-            emit(state.copyWith(status: FormzStatus.submissionFailure, error: wrongPassword));
-            break;
-          default:
-            emit(state.copyWith(status: FormzStatus.submissionFailure, error: generalErrorOccurred));
-            break;
-        }
-      } catch(e){
-        emit(state.copyWith(status: FormzStatus.submissionFailure, error: generalErrorOccurred));
+      }else{
+        emit(state.copyWith(status: FormzStatus.submissionFailure, error: data['error']));
       }
     }
   }

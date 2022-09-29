@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
 import '../../constants/local_storage.dart';
 import 'package:flutter/material.dart';
 
@@ -12,8 +16,17 @@ import './logic/internet/internet_cubit.dart';
 import 'logic/user/user_bloc.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  const FlutterSecureStorage secureStorage = FlutterSecureStorage();
+  var containsEncryptionKey = await secureStorage.containsKey(key: 'hiveEncryptionKey');
+  if (!containsEncryptionKey) {
+    var key = Hive.generateSecureKey();
+    await secureStorage.write(key: 'hiveEncryptionKey', value: base64UrlEncode(key));
+  }
+  var encryptionKey = base64Url.decode((await secureStorage.read(key: 'hiveEncryptionKey'))!);
+
   await Hive.initFlutter();
-  await Hive.openBox(localStorageKey);
+  await Hive.openBox(localStorageKey, encryptionCipher: HiveAesCipher(encryptionKey));
 
   runApp(MyApp(connectivity: Connectivity()));
 }

@@ -1,8 +1,8 @@
 part of './club_screen.dart';
 
 class TopPanel extends StatefulWidget {
-  final String url, type, name, website, description;
-  const TopPanel({Key? key, required this.url, required this.type, required this.name, required this.website, required this.description}) : super(key: key);
+  final Club club;
+  const TopPanel({Key? key, required this.club}) : super(key: key);
 
   @override
   State<TopPanel> createState() => _TopPanelState();
@@ -11,7 +11,7 @@ class TopPanel extends StatefulWidget {
 class _TopPanelState extends State<TopPanel> {
   @override
   Widget build(BuildContext context) {
-    return widget.type != "unknown" ? Container(
+    return widget.club.type != "unknown" ? Container(
       padding: const EdgeInsets.only(left: 35, right: 15, top: 32, bottom: 32),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -21,14 +21,14 @@ class _TopPanelState extends State<TopPanel> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               CircleAvatar(
-                backgroundImage: NetworkImage(widget.url),
+                backgroundImage: NetworkImage(widget.club.profileImage),
                 radius: 46,
               ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(widget.name, style: Theme.of(context).textTheme.bodyMedium,),
-                  Text(widget.website, style: Theme.of(context).textTheme.labelSmall!.copyWith(color: kBlue),)
+                  Text(widget.club.name, style: Theme.of(context).textTheme.bodyMedium,),
+                  Text(widget.club.website, style: Theme.of(context).textTheme.labelSmall!.copyWith(color: kBlue),)
                 ],
               ),
               Column(
@@ -36,29 +36,29 @@ class _TopPanelState extends State<TopPanel> {
                 children: [
                   Container(
                     width: 75, height: 72,
-                    padding: EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      border: Border.all(color: clubs()[widget.type]?['primary_color'] as Color, width: 2),
+                      border: Border.all(color: clubs()[widget.club.type]?['primary_color'] as Color, width: 2),
                       boxShadow: [BoxShadow(
                           color: kBlack.withOpacity(.25),
                           blurRadius: 4,
-                          offset: Offset(0, 4)
+                          offset: const Offset(0, 4)
                         )],
                       color: kWhite
                     ),
-                    child: clubs()[widget.type]?['icon'] as Widget,
+                    child: clubs()[widget.club.type]?['icon'] as Widget,
                   ),
                   Container(
                     width: 75,
                     padding: const EdgeInsets.symmetric(vertical: 4),
                     decoration: BoxDecoration(
-                      border: Border.all(color: clubs()[widget.type]?['primary_color'] as Color, width: 2),
-                      color: clubs()[widget.type]?['primary_color'],
+                      border: Border.all(color: clubs()[widget.club.type]?['primary_color'] as Color, width: 2),
+                      color: clubs()[widget.club.type]?['primary_color'],
                       boxShadow: [
                         BoxShadow(
                           color: kBlack.withOpacity(.25),
                           blurRadius: 4,
-                          offset: Offset(0, 4)
+                          offset: const Offset(0, 4)
                         )
                       ]
                     ),
@@ -69,9 +69,9 @@ class _TopPanelState extends State<TopPanel> {
             ],
           ),
           Padding(
-            padding: EdgeInsets.symmetric(vertical: 22),
+            padding: const EdgeInsets.symmetric(vertical: 22),
             child: ExpandableText(
-              widget.description,
+              widget.club.description,
               style: const TextStyle(fontSize: 12),
               textAlign: TextAlign.start,
               maxLines: 4,
@@ -79,15 +79,15 @@ class _TopPanelState extends State<TopPanel> {
               collapseText: 'show less',
               expandOnTextTap: true,
               collapseOnTextTap: true,
-              linkColor: clubs()[widget.type]?['primary_color'] as Color,
+              linkColor: clubs()[widget.club.type]?['primary_color'] as Color,
               animation: true,
-              animationDuration: Duration(milliseconds: 200),
+              animationDuration: const Duration(milliseconds: 200),
             ),
           ),
           Container(
-            padding: EdgeInsets.only(top: 10),
+            padding: const EdgeInsets.only(top: 10),
             alignment: Alignment.center,
-            child: clubs()[widget.type]?['middle_widget'] as Widget
+            child: clubs()[widget.club.type]?['middle_widget'] as Widget
           )
         ],
       ),
